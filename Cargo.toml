@@ -1,0 +1,18 @@
+[package]
+name = "mappable-rc"
+version = "0.1.0"
+description = "Provides mappable reference counted types"
+authors = ["Jakob Degen <jakob@degen.com>"]
+
+edition = "2021"
+
+readme = "CRATES.md"
+repository = "https://github.com/JakobDegen/mappable-rc"
+license = "MIT OR Apache-2.0"
+
+keywords = ["reference counting", "thread safety"]
+categories = ["memory-management", "no-std"]
+
+[features]
+default = []
+std = []
