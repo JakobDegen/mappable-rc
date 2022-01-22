@@ -10,7 +10,7 @@ readme = "CRATES.md"
 repository = "https://github.com/JakobDegen/mappable-rc"
 license = "MIT OR Apache-2.0"
 
-keywords = ["reference counting", "thread safety"]
+keywords = ["reference", "thread", "rc", "arc"]
 categories = ["memory-management", "no-std"]
 
 [features]
