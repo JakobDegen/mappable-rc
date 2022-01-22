@@ -80,7 +80,7 @@ extern crate std;
 
 mod std_impls;
 
-pub struct Marc<T: ?Sized> {
+pub struct Marc<T: ?Sized + 'static> {
     // SAFETY:
     //  - This is well aligned and points to a valid `T`
     //  - This is valid for at least as long as `alloc`
@@ -97,7 +97,7 @@ unsafe impl<T: Sync> Send for Marc<T> {}
 // same bounds.
 unsafe impl<T: Sync> Sync for Marc<T> {}
 
-pub struct Mrc<T: ?Sized> {
+pub struct Mrc<T: ?Sized + 'static> {
     // SAFETY:
     //  - This is well aligned and points to a valid `T`
     //  - This is valid for at least as long as `alloc`
@@ -129,10 +129,19 @@ macro_rules! impls {
             #[doc = concat!("`", $l, "`")]
             /// that refers to the data returned by the closure.
             ///
+            /// This only changes what data *this particular*
+            #[doc = concat!("`", $l, "`")]
+            /// refers to. It does not introduce mutability - any
+            #[doc = concat!("`", $l, "<T>`s")]
+            /// you've cloned from this one in the past still point to the same thing. Of course, if
+            /// you clone the value returned by this function, then the resulting
+            #[doc = concat!("`", $l, "<U>`s")]
+            /// will also point to the mapped value.
+            ///
             /// This does not cause the `T` to be dropped early. Even if the `&U` refers to only a
             /// part of the `&T`, no part of the `T` is dropped until all references to or into the
             /// `T` are gone, at which point the entire `T` is dropped at once.
-            pub fn map<U: ?Sized, F: FnOnce(&T) -> &U>(self_: Self, f: F) -> $name<U> {
+            pub fn map<U: ?Sized + 'static, F: FnOnce(&T) -> &U>(self_: Self, f: F) -> $name<U> {
                 let r = self_.deref();
                 // Panic safety: Panicking here only causes `orig` to be dropped
                 let out = f(r) as *const _;
@@ -155,7 +164,7 @@ macro_rules! impls {
             /// This is simply a fallible version of
             #[doc = concat!("[`", $l, "::map`]")]
             /// , and generally has all the same properties.
-            pub fn try_map<U: ?Sized, F: FnOnce(&T) -> Option<&U>>(
+            pub fn try_map<U: ?Sized + 'static, F: FnOnce(&T) -> Option<&U>>(
                 self_: Self,
                 f: F,
             ) -> Result<$name<U>, $name<T>> {
