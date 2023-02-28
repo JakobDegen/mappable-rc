@@ -1,8 +1,8 @@
 [package]
 name = "mappable-rc"
-version = "0.1.0"
+version = "0.1.1"
 description = "Provides mappable reference counted types"
-authors = ["Jakob Degen <jakob@degen.com>"]
+authors = ["Jakob Degen <jakob.e.degen@gmail.com>"]
 
 edition = "2021"
 
