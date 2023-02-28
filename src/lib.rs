@@ -91,11 +91,11 @@ pub struct Marc<T: ?Sized + 'static> {
 // SAFETY: A `Marc<T>` only gives shared access to a `T`. This impl does not have the `Send` bound
 // that the std impl has; that's because we never hand out a `&mut T` (doing so would be UB anyway).
 // The equivalent of the `Send` bound, is the `Send` requirement for the `alloc`.
-unsafe impl<T: Sync> Send for Marc<T> {}
+unsafe impl<T: Sync + ?Sized> Send for Marc<T> {}
 
 // SAFETY: A `Marc<T>` being `Sync` is basically equivalent to it being `Send`, so we require the
 // same bounds.
-unsafe impl<T: Sync> Sync for Marc<T> {}
+unsafe impl<T: Sync + ?Sized> Sync for Marc<T> {}
 
 pub struct Mrc<T: ?Sized + 'static> {
     // SAFETY:
@@ -316,7 +316,7 @@ mod tests {
 
     use std::panic::catch_unwind;
 
-    use alloc::vec;
+    use alloc::{string::ToString, vec};
 
     use crate::*;
 
@@ -365,6 +365,14 @@ mod tests {
     #[test]
     fn minimum_impls() {
         let a = Marc::new(5);
+        is_send(&a);
+        is_sync(&a);
+    }
+
+    // Ensures we get a compile error if we break this
+    #[test]
+    fn non_sized_send_and_sync() {
+        let a: Marc<str> = "foobar".to_string().into();
         is_send(&a);
         is_sync(&a);
     }
